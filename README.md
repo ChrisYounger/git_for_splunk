@@ -1,6 +1,6 @@
-This Splunk app will add and commit any file system changes under a configurable directory to git on a defined schedule. It can then optionally push the changes to an external repo. This is useful if you want to know what was changed and when in your environment (unfortunatly it cannot tell you "who" - but you could should be able to get a pretty good idea with the help of Splunk audit logs etc). 
+This Splunk app will add and commit any file system changes under a configurable directory to git on a defined schedule. It can then optionally push the changes to an external repository. This app is useful if you want to know what was changed and when in your environment, or if you want zero-overhead versioning of your dashboards, .conf changes, saved searches etc. Unfortunatly this app cannot tell you "who" make a change - but typically you can get a pretty good idea with the help of Splunk audit logs etc. 
 
-As there are many unique and specific ways of creating git repositories, this app will not do that for you.  You will also need to configure .gitignore file correctly. Typically you should exclude lookup tables (because these can be large and change often), and possibly sensitive files.
+As there are many unique and specific ways of creating git repositories, this app does not do that for you.  You will also need to configure .gitignore file correctly. Typically you should exclude lookup tables (because these can be large and change often), and possibly sensitive files.
 
 
 # Typical Installation Instructions
@@ -29,7 +29,7 @@ git config user.name Splunk
 git config push.default simple
 ```
 
-If desired, connect the repository to a remote repository:  (adjust URL below as necissary)
+If desired, connect the repository to a remote repository:  (adjust URL below as necissary).  Of course it would be totally silly to push to a public repository on GitHub or something so definitely don't do that.
 
 ```
 git remote add origin ssh://<url>.git
@@ -41,7 +41,7 @@ Create a .gitignore file. See below for recommendations on what should be in .gi
 cat > /opt/splunk/etc/.gitignore
 ```
 
-Commit the .gitignore file and push to the remote repo
+Commit the .gitignore file and push to the remote repo. On this step make sure the that the push can happen without requiring credentials. You should be using ideally SSH keys but credential cache with a very long expiry should work OK too. 
 
 ```
 git add .gitignore
@@ -85,11 +85,11 @@ ui-prefs.conf
 telemetry.conf
 ```
 
-For more ideas, see this Answers post: https://answers.splunk.com/answers/216267/what-do-you-put-in-your-gitignore-file-for-a-syste.html
+For more ideas, see this helpful Answers post: https://answers.splunk.com/answers/216267/what-do-you-put-in-your-gitignore-file-for-a-syste.html
 
-If you aren't sure what to ignore, start by having no gitignore rules and leave git_for_splunk run for a week. Then look at the dashboard to see what files have been changing the most frequently. You can then add your own rules, delete the whole repo and start again. 
+If you aren't sure what to ignore, start by having no gitignore file and leave git_for_splunk run for a week. Then look at the supplied dashboard to see which files have been changing the most frequently. You can then add your own rules, delete the whole repo and start again. 
 
-Use the following commands if you want to a exclude a previously tracked file from being tracked anymore:
+Alternativly, use the following commands to a exclude a previously tracked file from being tracked anymore:
 
 * cd /opt/splunk/etc/
 * Update .gitignore to specify the file pattern to ignore.
@@ -131,9 +131,9 @@ This addon comes with a helpful email Alert action. It will email you to tell yo
 
 ## Dealing with nested git repositories
 
-### Option 1) The best option is to alter your workflow in the nested repositories so that they store their .git folder out of the way. 
+Option 1) The best option is to alter your workflow in the nested repositories so that they store their .git folder out of the way. 
 
-### Option 2) This would be dubious, but you can use git hooks to hide the nested .git folders.
+Option 2) This would be dubious, but you can use git hooks to hide the nested .git folders.
 
 Create pre-commit file under .git/hooks/ of your root repo with contents:
 
