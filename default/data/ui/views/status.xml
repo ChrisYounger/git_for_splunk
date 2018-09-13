@@ -1,0 +1,121 @@
+<form>
+  <label>Status</label>
+  <fieldset submitButton="false">
+    <input type="time" token="time" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>sourcetype=gitforsplunk index=_internal 
+| eval time = strftime(_time, "%Y-%m-%d %H:%M") 
+| eval etime1 = _time
+| eval etime2 = _time + 1
+| rex field=_raw "(?s)git commit \-m auto.*?(?&lt;no_changes&gt;no changes added to commit)"
+| sort - _time
+| foreach status_* 
+    [eval &lt;&lt;MATCHSTR&gt;&gt; = case(isnull(&lt;&lt;FIELD&gt;&gt;), null(), &lt;&lt;FIELD&gt;&gt;==0, "OK", true(), "Error")]
+| eval commit_files = if(isnotnull(no_changes) AND status_commit_files == 1, "No Changes", commit_files) 
+| table etime1 etime2 time host commit_message runtime check_status add_files commit_files change_message commit_details push 
+| rename time as Time host as Host commit_message as "Commit message" runtime as Duration check_status as "Check status" add_files as "Add files" commit_files as "Commit files" change_message as "Update message" commit_details as "Show details" push as "Push"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="Check status">
+          <colorPalette type="map">{"OK":#53A051,"Error":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="Add files">
+          <colorPalette type="map">{"OK":#53A051,"Error":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="Commit files">
+          <colorPalette type="map">{"OK":#53A051,"Error":#DC4E41,"No Changes":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="Update message">
+          <colorPalette type="map">{"OK":#53A051,"Error":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="Show details">
+          <colorPalette type="map">{"OK":#53A051,"Error":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="Push">
+          <colorPalette type="map">{"OK":#53A051,"Error":#DC4E41}</colorPalette>
+        </format>
+        <fields>["Time","Host","Commit message","Duration","Check status","Add files","Commit files","Update message","Show details","Push"]</fields>
+        <drilldown>
+          <set token="host">$row.Host$</set>
+          <set token="etime1">$row.etime1$</set>
+          <set token="etime2">$row.etime2$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row depends="$host$">
+    <panel>
+      <event>
+        <title>Run details</title>
+        <search>
+          <query>sourcetype=gitforsplunk index=_internal host=$host$ earliest=$etime1$ latest=$etime2$</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="list.drilldown">none</option>
+        <option name="list.wrap">1</option>
+        <option name="maxLines">5</option>
+        <option name="raw.drilldown">full</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">0</option>
+        <option name="table.drilldown">all</option>
+        <option name="table.sortDirection">asc</option>
+        <option name="table.wrap">1</option>
+        <option name="type">list</option>
+      </event>
+    </panel>
+  </row>
+  <row depends="$host$">
+    <panel>
+      <html>
+      <a data-unset-token="host">Close this panel</a>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Most regularly changing files</title>
+      <table>
+        <search>
+          <query>sourcetype=gitforsplunk index=_internal 
+|  top 20 changed_file 
+|  fields - percent
+| rename changed_file as "Filename" count as Count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>
