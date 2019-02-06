@@ -177,3 +177,13 @@ More reading:
 * https://stackoverflow.com/a/48649409/1653340
 * https://stackoverflow.com/questions/23362967/how-to-tell-git-to-ignore-git-sub-modules
 * https://stackoverflow.com/questions/14224966/merge-error-after-converting-git-submodule-to-subtree
+
+
+
+
+## Third party software
+
+The following third-party libraries are used by this app. Thank you!
+
+* Font Awesome - CC BY 4.0 License - https://fontawesome.com/
+* Splunk Add-on Builder - Splunk App End User License Agreement - https://splunkbase.splunk.com/app/2962/

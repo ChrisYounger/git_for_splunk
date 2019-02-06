@@ -1,4 +1,4 @@
-<nav search_view="search" color="#9a9994">
+<nav search_view="search" color="transparent" >
 <view name="status" default="true" />
 <view name="inputs"/>
 <view name="alerts" label="Alerts"/>
