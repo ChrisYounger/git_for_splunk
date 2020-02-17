@@ -1,0 +1,5 @@
+<nav search_view="search" color="transparent" >
+<view name="status" default="true" />
+<view name="inputs"/>
+<view name="alerts" label="Alerts"/>
+</nav>
