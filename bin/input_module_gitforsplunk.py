@@ -11,10 +11,15 @@ def validate_input(helper, definition):
 def gitcmd(cmds, my_env, event_data):
     p = subprocess.Popen(cmds, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, env=my_env)
     o = p.communicate()
-    event_data.append("COMMAND: " + " ".join(cmds) + "\n" + "OUTPUT:" + str(o[0]) + "\n" + str(o[1]) + "\n" + "EXITCODE: " + str(p.returncode))
-    if p.returncode > 0:
-        raise Exception("Error occured")
-    return str(o[0])
+    if sys.version_info < (3, 0):
+        str_stdout = str(o[0])
+        str_stderr = str(o[1])
+    else:
+        str_stdout = o[0].decode('utf-8')
+        str_stderr = o[1].decode('utf-8')
+    event_data.append("COMMAND: " + " ".join(cmds) + "\n" + "OUTPUT:" + str_stdout + "\n" + str_stderr + "\n" + "EXITCODE: " + str(p.returncode))
+    return p.returncode, str_stdout
+
 
 def calcDirSize(start_path):
     total_size = 0
@@ -66,25 +71,38 @@ def collect_events(helper, ew):
                 o = p.communicate()
                 event_data.append("Running Btool for: " + conf_type + " (rc=" + str(p.returncode) + ")")
 
-        gitcmd(["git", "status"], my_env, event_data)
+        ret_code, ret_output = gitcmd(["git", "status"], my_env, event_data)
+        if ret_code > 0:
+            raise Exception("Error occured - is git installed?")
         # this can fail if the splunk user doesnt have permissions to read files or if files are locked. 
         # Could use --ignore-errors but its better to fail so someone will notice and fix it, rather than half-working.
-        gitcmd(["git", "add", "--all"], my_env, event_data)
+        ret_code, ret_output = gitcmd(["git", "add", "--all"], my_env, event_data)
+        if ret_code > 0:
+            raise Exception("Error occured - are file permissions correct or are files locked?")
+
         # this command can return 1 if there are no changes.
-        ret = gitcmd(["git", "commit", "-m", "auto"], my_env, event_data)
-        git_size = calcDirSize(my_env["GIT_DIR"])
-        m = re.search(r"\s(\d+ files? changed[^\r\n]+)", ret)
-        if not m is None:
-            gitcmd(["git", "commit", "--amend", "-m", "Auto: " + format((git_size / 1000000),'.0f') + " MB, " + str(m.group())], my_env, event_data)
+        ret_code, ret_output = gitcmd(["git", "commit", "-m", "auto"], my_env, event_data)
+        if ret_code == 1 and "nothing to commit" in ret_output:
+            event_data.append("No changes")
+        else:
+            if ret_code > 0:
+                raise Exception("Error occured")
+                
+            git_size = calcDirSize(my_env["GIT_DIR"])
+            m = re.search(r"\s(\d+ files? changed[^\r\n]+)", ret_output)
+            if not m is None:
+                ret_code, ret_output = gitcmd(["git", "commit", "--amend", "-m", "Auto: " + format((git_size / 1000000),'.0f') + " MB, " + str(m.group())], my_env, event_data)
 
-        status = 1
+            status = 1
 
-        gitcmd(["git", "log", "--stat=150,120", "-1"], my_env, event_data)
+            ret_code, ret_output = gitcmd(["git", "log", "--stat=150,120", "-1"], my_env, event_data)
 
-        event_data.append("repo_size=" + str(git_size))
+            event_data.append("repo_size=" + str(git_size))
 
-        if helper.get_arg('remote_push'):
-            gitcmd(["git", "push"], my_env, event_data)
+            if helper.get_arg('remote_push'):
+                ret_code, ret_output = gitcmd(["git", "push"], my_env, event_data)
+                if ret_code > 0:
+                    raise Exception("Error occured - is authentication to remote site correct? and network path available?")
 
         status = 0
 

@@ -13,17 +13,20 @@
     <panel>
       <table>
         <search>
-          <query>sourcetype=gitforsplunk index=_internal 
+          <query>
+sourcetype=gitforsplunk index=_internal 
 | eval time = strftime(_time, "%Y-%m-%d %H:%M") 
 | eval etime1 = _time
 | eval etime2 = _time + 1
-| rex field=_raw "(?s)git commit \-m auto.*?(?&lt;no_changes&gt;no changes added to commit)"
+| rex "(?s)git commit \-m auto.*?(?&lt;no_changes1&gt;no changes added to commit)"
+| rex "EXITCODE: 1[\s*](?&lt;no_changes2&gt;No changes)"
 | sort - _time
 | foreach status_* 
     [eval &lt;&lt;MATCHSTR&gt;&gt; = case(isnull(&lt;&lt;FIELD&gt;&gt;), null(), &lt;&lt;FIELD&gt;&gt;==0, "OK", true(), "Error")]
-| eval commit_files = if(isnotnull(no_changes) AND status_commit_files == 1, "No Changes", commit_files) 
+| eval commit_files = if((isnotnull(no_changes1) OR isnotnull(no_changes2)) AND status_commit_files == 1, "No Changes", commit_files) 
 | table etime1 etime2 time host commit_message runtime check_status add_files commit_files change_message commit_details push 
-| rename time as Time host as Host commit_message as "Commit message" runtime as Duration check_status as "Check status" add_files as "Add files" commit_files as "Commit files" change_message as "Update message" commit_details as "Show details" push as "Push"</query>
+| rename time as Time host as Host commit_message as "Commit message" runtime as Duration check_status as "Check status" add_files as "Add files" commit_files as "Commit files" change_message as "Update message" commit_details as "Show details" push as "Push"
+          </query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -32,7 +35,6 @@
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">row</option>
         <option name="percentagesRow">false</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -53,6 +55,9 @@
         </format>
         <format type="color" field="Push">
           <colorPalette type="map">{"OK":#53A051,"Error":#DC4E41}</colorPalette>
+        </format>
+        <format type="number" field="Duration">
+          <option name="unit">sec</option>
         </format>
         <fields>["Time","Host","Commit message","Duration","Check status","Add files","Commit files","Update message","Show details","Push"]</fields>
         <drilldown>

@@ -1,248 +1,248 @@
 {
     "meta": {
-        "restRoot": "git_for_splunk", 
-        "name": "git_for_splunk", 
-        "displayName": "Git Version Control for Splunk", 
-        "version": "1.0.0", 
-        "apiVersion": "3.0.0"
-    }, 
+        "name": "git_for_splunk",
+        "displayName": "Git for Splunk",
+        "version": "1.0.0",
+        "apiVersion": "3.0.0",
+        "restRoot": "git_for_splunk"
+    },
     "pages": {
         "configuration": {
-            "description": "Set up your add-on", 
-            "title": "Configuration", 
+            "title": "Configuration",
+            "description": "Set up your add-on",
             "tabs": [
                 {
-                    "name": "logging", 
+                    "name": "logging",
+                    "title": "Logging",
                     "entity": [
                         {
+                            "field": "loglevel",
+                            "label": "Log level",
+                            "type": "singleSelect",
                             "options": {
-                                "disableSearch": true, 
+                                "disableSearch": true,
                                 "autoCompleteFields": [
                                     {
-                                        "label": "DEBUG", 
+                                        "label": "DEBUG",
                                         "value": "DEBUG"
-                                    }, 
+                                    },
                                     {
-                                        "label": "INFO", 
+                                        "label": "INFO",
                                         "value": "INFO"
-                                    }, 
+                                    },
                                     {
-                                        "label": "WARNING", 
+                                        "label": "WARNING",
                                         "value": "WARNING"
-                                    }, 
+                                    },
                                     {
-                                        "label": "ERROR", 
+                                        "label": "ERROR",
                                         "value": "ERROR"
-                                    }, 
+                                    },
                                     {
-                                        "label": "CRITICAL", 
+                                        "label": "CRITICAL",
                                         "value": "CRITICAL"
                                     }
                                 ]
-                            }, 
-                            "label": "Log level", 
-                            "type": "singleSelect", 
-                            "field": "loglevel", 
+                            },
                             "defaultValue": "INFO"
                         }
-                    ], 
-                    "title": "Logging"
+                    ]
                 }
             ]
-        }, 
+        },
         "inputs": {
-            "description": "Manage your data inputs", 
-            "title": "Inputs", 
-            "services": [
-                {
-                    "name": "gitforsplunk", 
-                    "entity": [
-                        {
-                            "validators": [
-                                {
-                                    "pattern": "^[a-zA-Z]\\w*$", 
-                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores.", 
-                                    "type": "regex"
-                                }, 
-                                {
-                                    "minLength": 1, 
-                                    "errorMsg": "Length of input name should be between 1 and 100", 
-                                    "type": "string", 
-                                    "maxLength": 100
-                                }
-                            ], 
-                            "label": "Name", 
-                            "type": "text", 
-                            "field": "name", 
-                            "help": "Enter a unique name for the data input", 
-                            "required": true
-                        }, 
-                        {
-                            "validators": [
-                                {
-                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$", 
-                                    "errorMsg": "Interval must be an integer.", 
-                                    "type": "regex"
-                                }
-                            ], 
-                            "label": "Interval", 
-                            "type": "text", 
-                            "field": "interval", 
-                            "help": "Time interval of input in seconds.", 
-                            "required": true
-                        }, 
-                        {
-                            "validators": [
-                                {
-                                    "minLength": 1, 
-                                    "errorMsg": "Length of index name should be between 1 and 80.", 
-                                    "type": "string", 
-                                    "maxLength": 80
-                                }
-                            ], 
-                            "label": "Index", 
-                            "type": "singleSelect", 
-                            "options": {
-                                "endpointUrl": "data/indexes", 
-                                "createSearchChoice": true, 
-                                "blackList": "^_.*$"
-                            }, 
-                            "defaultValue": "default", 
-                            "field": "index", 
-                            "required": true
-                        }, 
-                        {
-                            "validators": [
-                                {
-                                    "minLength": 0, 
-                                    "errorMsg": "Max length of text input is 8192", 
-                                    "type": "string", 
-                                    "maxLength": 8192
-                                }
-                            ], 
-                            "label": "Working directory", 
-                            "type": "text", 
-                            "field": "working_directory", 
-                            "defaultValue": "etc/", 
-                            "help": "This is the path which will be tracked for changes. Relative to SPLUNK_HOME or an absolute path", 
-                            "required": true
-                        }, 
-                        {
-                            "validators": [
-                                {
-                                    "minLength": 0, 
-                                    "errorMsg": "Max length of text input is 8192", 
-                                    "type": "string", 
-                                    "maxLength": 8192
-                                }
-                            ], 
-                            "label": "Repository directory", 
-                            "type": "text", 
-                            "field": "repository_directory", 
-                            "defaultValue": ".git/", 
-                            "help": "The path where the git respotory will be stored. Relative to the working directory or an absolute path.", 
-                            "required": true
-                        }, 
-                        {
-                            "label": "Include Btool output", 
-                            "type": "checkbox", 
-                            "field": "include_btool_output", 
-                            "defaultValue": true, 
-                            "help": "Btool output will be saved to files to track the layered Splunk configuration", 
-                            "required": false
-                        }, 
-                        {
-                            "validators": [
-                                {
-                                    "minLength": 0, 
-                                    "errorMsg": "Max length of text input is 8192", 
-                                    "type": "string", 
-                                    "maxLength": 8192
-                                }
-                            ], 
-                            "label": "Btool .conf files", 
-                            "type": "text", 
-                            "field": "btool_conf_files", 
-                            "defaultValue": "inputs, indexes, fields, props, limits, outputs, props, transforms, savedsearches, macros", 
-                            "help": "Comma separated list of .conf files which should be tracked for changes using Btool.", 
-                            "required": false
-                        }, 
-                        {
-                            "label": "Push to remote repository", 
-                            "type": "checkbox", 
-                            "field": "remote_push", 
-                            "defaultValue": true, 
-                            "help": "Push changes to the remote repository on each run", 
-                            "required": false
-                        }
-                    ], 
-                    "title": "Git for Splunk"
-                }
-            ], 
+            "title": "Inputs",
+            "description": "Manage your data inputs",
             "table": {
-                "actions": [
-                    "edit", 
-                    "enable", 
-                    "delete", 
-                    "clone"
-                ], 
-                "moreInfo": [
-                    {
-                        "label": "Name", 
-                        "field": "name"
-                    }, 
-                    {
-                        "label": "Interval", 
-                        "field": "interval"
-                    }, 
-                    {
-                        "label": "Index", 
-                        "field": "index"
-                    }, 
-                    {
-                        "label": "Status", 
-                        "field": "disabled"
-                    }, 
-                    {
-                        "label": "Working directory", 
-                        "field": "working_directory"
-                    }, 
-                    {
-                        "label": "Repository directory", 
-                        "field": "repository_directory"
-                    }, 
-                    {
-                        "label": "Include Btool output", 
-                        "field": "include_btool_output"
-                    }, 
-                    {
-                        "label": "Btool .conf files", 
-                        "field": "btool_conf_files"
-                    }, 
-                    {
-                        "label": "Push to remote repository", 
-                        "field": "remote_push"
-                    }
-                ], 
                 "header": [
                     {
-                        "label": "Name", 
-                        "field": "name"
-                    }, 
+                        "field": "name",
+                        "label": "Name"
+                    },
                     {
-                        "label": "Interval", 
-                        "field": "interval"
-                    }, 
+                        "field": "interval",
+                        "label": "Interval"
+                    },
                     {
-                        "label": "Index", 
-                        "field": "index"
-                    }, 
+                        "field": "index",
+                        "label": "Index"
+                    },
                     {
-                        "label": "Status", 
-                        "field": "disabled"
+                        "field": "disabled",
+                        "label": "Status"
                     }
+                ],
+                "moreInfo": [
+                    {
+                        "field": "name",
+                        "label": "Name"
+                    },
+                    {
+                        "field": "interval",
+                        "label": "Interval"
+                    },
+                    {
+                        "field": "index",
+                        "label": "Index"
+                    },
+                    {
+                        "field": "disabled",
+                        "label": "Status"
+                    },
+                    {
+                        "field": "working_directory",
+                        "label": "Working directory"
+                    },
+                    {
+                        "field": "repository_directory",
+                        "label": "Repository directory"
+                    },
+                    {
+                        "field": "include_btool_output",
+                        "label": "Include Btool output"
+                    },
+                    {
+                        "field": "btool_conf_files",
+                        "label": "Btool .conf files"
+                    },
+                    {
+                        "field": "remote_push",
+                        "label": "Push to remote repository"
+                    }
+                ],
+                "actions": [
+                    "edit",
+                    "enable",
+                    "delete",
+                    "clone"
                 ]
-            }
+            },
+            "services": [
+                {
+                    "name": "gitforsplunk",
+                    "title": "Git for Splunk",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "interval",
+                            "label": "Interval",
+                            "type": "text",
+                            "required": true,
+                            "help": "Time interval of input in seconds.",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
+                                    "errorMsg": "Interval must be an integer."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "blackList": "^_.*$",
+                                "createSearchChoice": true
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "working_directory",
+                            "label": "Working directory",
+                            "help": "This is the path which will be tracked for changes. Relative to SPLUNK_HOME or an absolute path\n",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "etc/",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "repository_directory",
+                            "label": "Repository directory",
+                            "help": "The path where the git repository will be stored. Relative to the working directory or an absolute path.",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": ".git/",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "include_btool_output",
+                            "label": "Include Btool output",
+                            "help": "Btool output will be saved to files to track the layered Splunk configuration",
+                            "required": false,
+                            "type": "checkbox",
+                            "defaultValue": true
+                        },
+                        {
+                            "field": "btool_conf_files",
+                            "label": "Btool .conf files",
+                            "help": "Comma separated list of .conf files which should be tracked for changes using Btool.",
+                            "required": false,
+                            "type": "text",
+                            "defaultValue": "inputs, indexes, fields, props, limits, outputs, props, transforms, savedsearches, macros",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "remote_push",
+                            "label": "Push to remote repository",
+                            "help": "Push changes to the remote repository on each run",
+                            "required": false,
+                            "type": "checkbox",
+                            "defaultValue": true
+                        }
+                    ]
+                }
+            ]
         }
     }
 }

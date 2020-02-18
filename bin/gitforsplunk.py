@@ -51,7 +51,7 @@ class ModInputgitforsplunk(modinput_wrapper.base_modinput.BaseModInput):
                                          required_on_create=True,
                                          required_on_edit=False))
         scheme.add_argument(smi.Argument("repository_directory", title="Repository directory",
-                                         description="The path where the git respotory will be stored. Relative to the working directory or an absolute path.",
+                                         description="The path where the git repository will be stored. Relative to the working directory or an absolute path.",
                                          required_on_create=True,
                                          required_on_edit=False))
         scheme.add_argument(smi.Argument("include_btool_output", title="Include Btool output",

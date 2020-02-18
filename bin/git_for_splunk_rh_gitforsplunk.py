@@ -27,10 +27,10 @@ fields = [
         'index',
         required=True,
         encrypted=False,
-        default='default',
+        default='_internal',
         validator=validator.String(
-            max_len=80, 
             min_len=1, 
+            max_len=80, 
         )
     ), 
     field.RestField(
@@ -39,8 +39,8 @@ fields = [
         encrypted=False,
         default='etc/',
         validator=validator.String(
-            max_len=8192, 
             min_len=0, 
+            max_len=8192, 
         )
     ), 
     field.RestField(
@@ -49,8 +49,8 @@ fields = [
         encrypted=False,
         default='.git/',
         validator=validator.String(
-            max_len=8192, 
             min_len=0, 
+            max_len=8192, 
         )
     ), 
     field.RestField(
@@ -66,8 +66,8 @@ fields = [
         encrypted=False,
         default='inputs, indexes, fields, props, limits, outputs, props, transforms, savedsearches, macros',
         validator=validator.String(
-            max_len=8192, 
             min_len=0, 
+            max_len=8192, 
         )
     ), 
     field.RestField(

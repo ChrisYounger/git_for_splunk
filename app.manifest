@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.0.0",
   "info": {
-    "title": "Git Version Control for Splunk",
+    "title": "Git for Splunk",
     "id": {
       "group": null,
       "name": "git_for_splunk",
-      "version": "1.1"
+      "version": "1.0.0"
     },
     "author": [
       {
@@ -15,7 +15,7 @@
       }
     ],
     "releaseDate": null,
-    "description": "",
+    "description": "Simple versioning for Splunk",
     "classification": {
       "intendedAudience": null,
       "categories": [],
