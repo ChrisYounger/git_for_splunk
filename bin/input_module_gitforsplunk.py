@@ -64,12 +64,12 @@ def collect_events(helper, ew):
                 if os.path.isfile(file_path):
                     os.unlink(file_path)
             except Exception as e:
-                print(e)
+                event_data.append("Exception: " + str(e))
             for conf_type in btool_confs:
-                log = open(os.path.join(btool_folder_name, conf_type), "w")
-                p = subprocess.Popen([os.path.join(SPLUNK_HOME, 'bin', 'splunk'), "btool", conf_type, "list", "--debug"], stdout=log, stderr=subprocess.PIPE, shell=False)
-                o = p.communicate()
-                event_data.append("Running Btool for: " + conf_type + " (rc=" + str(p.returncode) + ")")
+                with open(os.path.join(btool_folder_name, conf_type), "w") as log:
+                    p = subprocess.Popen([os.path.join(SPLUNK_HOME, 'bin', 'splunk'), "btool", conf_type, "list", "--debug"], stdout=log, stderr=subprocess.PIPE, shell=False)
+                    o = p.communicate()
+                    event_data.append("Running Btool for: " + conf_type + " (rc=" + str(p.returncode) + ")")
 
         ret_code, ret_output = gitcmd(["git", "status"], my_env, event_data)
         if ret_code > 0:
