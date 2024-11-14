@@ -3,8 +3,8 @@
         "name": "git_for_splunk",
         "displayName": "Git for Splunk",
         "version": "1.0.0",
-        "apiVersion": "3.0.0",
-        "restRoot": "git_for_splunk"
+        "restRoot": "git_for_splunk",
+        "schemaVersion": "0.0.3"
     },
     "pages": {
         "configuration": {
@@ -163,8 +163,8 @@
                             "defaultValue": "default",
                             "options": {
                                 "endpointUrl": "data/indexes",
-                                "blackList": "^_.*$",
-                                "createSearchChoice": true
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
                             },
                             "required": true,
                             "validators": [

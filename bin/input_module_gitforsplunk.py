@@ -31,7 +31,7 @@ def calcDirSize(start_path):
 def collect_events(helper, ew):
     event_data = []
 
-    started = time.clock()
+    started = time.time()
     status = 2
     try:
         SPLUNK_HOME = os.environ['SPLUNK_HOME']
@@ -110,7 +110,7 @@ def collect_events(helper, ew):
         template = "An exception of type {0} occurred. Arguments:\n{1!r}"
         event_data.append(template.format(type(ex).__name__, ex.args))
 
-    event_data.append("runtime=" + str(time.clock() - started))
+    event_data.append("runtime=" + str(time.time() - started))
     event_data.append("status=" + str(status))
     #event_data.append("sourcetype=" + helper.get_sourcetype())
     #event_data.append("source=" + helper.get_input_type())
