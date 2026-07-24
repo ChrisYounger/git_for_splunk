@@ -3,4 +3,5 @@ working_directory = This is the path which will be tracked for changes. Relative
 repository_directory = The path where the git repository will be stored. Relative to the working directory or an absolute path.
 include_btool_output = Btool output will be saved to files to track the layered Splunk configuration
 btool_conf_files = Comma separated list of .conf files which should be tracked for changes using Btool.
+split_savedsearches_conf = Unpack the savedsearces.conf file into a .git_savedsearches folder so that changes can be tracked more easily
 remote_push = Push changes to the remote repository on each run

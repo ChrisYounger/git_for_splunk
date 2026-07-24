@@ -1,4 +1,14 @@
-<?xml version="1.0"?>
-<view template="git_for_splunk:templates/base.html" type="html" isDashboard="False">
-    <label>Inputs</label>
-</view>
+<form version="1.1">
+  <label>Inputs</label>
+  <row>
+    <panel>
+        <html>
+            <div style="padding:100px; line-height:30px; font-size:18px;">
+
+                Inputs are now defined on the <a href="/manager/git_for_splunk/data/inputs/git_for_splunk/">Data inputs</a> page.<br />
+
+            </div>        
+        </html>
+    </panel>
+  </row>
+</form>
