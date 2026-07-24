@@ -6,6 +6,7 @@
 
 import sys
 import os
+import shutil
 import subprocess
 import traceback
 import xml.etree.ElementTree as ET
@@ -309,6 +310,30 @@ def process_stanza(stanza_name, params):
     print(f"INFO Finished stanza={stanza_name} with status={status} runtime={runtime}s", file=sys.stderr)
 
     
+def delete_legacy_files():
+    # when splunk updates an app, it doeent clear the bin or appserver directories. however it does clear the default directory
+    app_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if os.path.exists(os.path.join(app_folder, "bin", "input_module_gitforsplunk.py")):
+        os.remove(os.path.join(app_folder, "bin", "input_module_gitforsplunk.py"))    
+    if os.path.exists(os.path.join(app_folder, "bin", "input_module_gitforsplunk.pyc")):
+        os.remove(os.path.join(app_folder, "bin", "input_module_gitforsplunk.pyc"))    
+    if os.path.exists(os.path.join(app_folder, "bin", "git_for_splunk_declare.py")):
+        os.remove(os.path.join(app_folder, "bin", "git_for_splunk_declare.py"))    
+    if os.path.exists(os.path.join(app_folder, "bin", "git_for_splunk_declare.pyc")):
+        os.remove(os.path.join(app_folder, "bin", "git_for_splunk_declare.pyc"))    
+    if os.path.exists(os.path.join(app_folder, "bin", "git_for_splunk_rh_gitforsplunk.py")):
+        os.remove(os.path.join(app_folder, "bin", "git_for_splunk_rh_gitforsplunk.py"))    
+    if os.path.exists(os.path.join(app_folder, "bin", "git_for_splunk_rh_gitforsplunk.pyc")):
+        os.remove(os.path.join(app_folder, "bin", "git_for_splunk_rh_gitforsplunk.pyc"))    
+    if os.path.exists(os.path.join(app_folder, "bin", "git_for_splunk_rh_settings.py")):
+        os.remove(os.path.join(app_folder, "bin", "git_for_splunk_rh_settings.py"))    
+    if os.path.exists(os.path.join(app_folder, "bin", "git_for_splunk_rh_settings.pyc")):
+        os.remove(os.path.join(app_folder, "bin", "git_for_splunk_rh_settings.pyc"))
+    if os.path.exists(os.path.join(app_folder, "bin", "git_for_splunk")):
+        shutil.rmtree(os.path.join(app_folder, "bin", "git_for_splunk"))
+    if os.path.exists(os.path.join(app_folder, "appserver")):
+        shutil.rmtree(os.path.join(app_folder, "appserver"))
+
 
 def main():
     """
@@ -318,6 +343,7 @@ def main():
         arg = sys.argv[1].lower()
         if arg in ("--scheme", "-scheme"):
             print(SCHEME_XML)
+            delete_legacy_files()
             sys.exit(0)
         elif arg in ("--validate-arguments", "-validate-arguments"):
             sys.exit(0)
