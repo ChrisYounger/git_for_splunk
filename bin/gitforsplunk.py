@@ -36,6 +36,13 @@ SCHEME_XML = """<scheme>
                 <required_on_create>false</required_on_create>
                 <required_on_edit>false</required_on_edit>
             </arg>
+            <arg name="openssl_conf_file">
+                <title>Custom OPENSSL_CONF file</title>
+                <description>The absolute path to a custom openssl.conf file, which might be required for some remote git servers.</description>
+                <data_type>string</data_type>
+                <required_on_create>false</required_on_create>
+                <required_on_edit>false</required_on_edit>
+            </arg>            
             <arg name="split_savedsearches_conf">
                 <title>Split savedsearches.conf files</title>
                 <description>Unpack the savedsearces.conf file into a .git_savedsearches folder so that changes can be tracked more easily (doesnt affect regular Splunk operation).</description>
@@ -117,13 +124,14 @@ def split_savedsearches(event_data):
         
     for conf_file in set(conf_files):
         try:
-            event_data.append("Splitting file: " + conf_file)            
             local_dir = os.path.dirname(conf_file)
             out_dir = os.path.join(local_dir, ".git_savedsearches")
             
             # may be a potentional issue here if modtime of directory changes unexpectedly
             if os.path.exists(out_dir) and os.path.getmtime(out_dir) >= os.path.getmtime(conf_file):
                 continue
+
+            event_data.append("Splitting file: " + conf_file)            
                 
             if not os.path.exists(out_dir):
                 os.makedirs(out_dir)
@@ -240,6 +248,10 @@ def process_stanza(stanza_name, params):
         my_env["GIT_WORK_TREE"] = working_directory
         my_env["GIT_DIR"] = os.path.join(working_directory, params.get('repository_directory'))
         event_data.append("GIT_DIR=" + my_env["GIT_DIR"])
+        # custom openssl_conf file
+        if params.get('openssl_conf_file', False):
+            my_env["OPENSSL_CONF"] = params.get('openssl_conf_file')
+            event_data.append("OPENSSL_CONF=" + my_env["OPENSSL_CONF"])
 
         if parse_bool(params.get('include_btool_output')):
             btool_folder_name = "btool_output"
@@ -286,7 +298,7 @@ def process_stanza(stanza_name, params):
 
             status = 1
 
-            ret_code, ret_output = gitcmd(["git", "log", "--stat=150,120", "-1"], my_env, event_data)
+            ret_code, ret_output = gitcmd(["git", "log", "--stat=550,500", "-1", "--stat-graph-width=5"], my_env, event_data)
 
             event_data.append("repo_size=" + str(git_size))
 
